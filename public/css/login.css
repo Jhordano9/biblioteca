@@ -1,0 +1,37 @@
+.login {
+    min-height: 100vh;
+  }
+  
+  .bg-image {
+    background-image: url('https://source.unsplash.com/WEQbe2jBg40/600x1200');
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .login-heading {
+    font-weight: 300;
+  }
+  
+  .btn-login {
+    font-size: 0.9rem;
+    letter-spacing: 0.05rem;
+    padding: 0.75rem 1rem;
+  }
+  .card-columns {
+    @include media-breakpoint-only(lg) {
+      column-count: 4;
+    }
+    @include media-breakpoint-only(xl) {
+      column-count: 5;
+    }
+  }
+
+  .pagination{clear:both;display:flex;width:100%;text-align:right}#navigation-pagination.navigation{float:right}#navigation-pagination.navigation li{display:inline;list-style:none}.pagination a.page-numbers,#navigation-pagination.navigation li.disabled,.pagination .page-numbers.dots{margin:0 5px;background:#fff;border:1px solid #e4e8ee;padding:15px 20px;font:14px Montserrat,sans-serif;color:#000}#navigation-pagination.navigation li a,#navigation-pagination.navigation li a:hover,#navigation-pagination.navigation li.active a,#navigation-pagination.navigation li a:hover,#navigation-pagination.navigation li.active a,.pagination .current,.pagination span.dots,.pagination a:hover.page-numbers{margin:0 5px;background:#ff5722;color:#fff;padding:15px 20px;border:1px solid #ff5722;font:14px Montserrat,sans-serif}
+  .activado{
+    color: #fff!important;
+    background:#000!important;
+    font-weight: bold!important;
+  }
+  .page-numbers{
+    font-weight: bold!important;
+  }
