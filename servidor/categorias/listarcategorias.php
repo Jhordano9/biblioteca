@@ -1,5 +1,5 @@
 <?php session_start();
-    include "../clases/Categorias.php";
+    include "../../clases/Categorias.php";
 
     $Categoria = new Categoria();
 

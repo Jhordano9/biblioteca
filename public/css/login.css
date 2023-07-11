@@ -35,3 +35,8 @@
   .page-numbers{
     font-weight: bold!important;
   }
+
+  .card-block{
+    flex: 1 1 auto;
+    padding: 1.25rem;
+  }

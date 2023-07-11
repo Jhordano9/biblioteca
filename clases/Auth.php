@@ -24,6 +24,7 @@
                 
                 if (password_verify($password, $passwordExistente)) {
                     $_SESSION['usuario'] = $user['nombre'];
+                    $_SESSION['rol'] = $user['perfil'];
                     return true;
                 } else {
                     return false;

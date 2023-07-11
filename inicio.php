@@ -73,12 +73,12 @@ LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
 <div class="container mb-4">
   <h1 class="mt-4 mb-4">Catálogo de libros</h1>
   <div class="row">
-  <?php $ruta = "images/"; 
+  <?php $ruta = "public/images/categorias/"; 
                         
                 foreach($consulta_resultados as $row){?>
   <div class="col-sm-3">
     <div class="card" style="width: 12rem;">
-      <img class="card-img-top" src="public/images/psicologia.png" alt="Card image cap">
+      <img class="card-img-top" src="<?php echo $ruta.$row['imagen']?>" alt="Card image cap">
       <div class="card-body">
         <h5 class="card-title"><?php echo $row['nombre']?></h5>
         <a href="#" class="btn btn-primary">Ver</a>

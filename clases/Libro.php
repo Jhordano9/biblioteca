@@ -1,48 +1,37 @@
 <?php 
     include "Conexion.php";
 
-    class Categoria extends Conexion {
-        public function registrar($nombre, $imagen) {
+    class Libro extends Conexion {
+        public function registrar($categoria,$autor,$tipo,$nomlibro,$imagen,$pdf) {
             //var_dump($nombre, $imagen);
             $conexion = parent::conectar();
-            $sql = "INSERT INTO categorias (nombre, imagen) 
-                    VALUES (?,?)";
+            $sql = "INSERT INTO libros (categoria_id, autor, nombre, tipo, imagen, pdf) 
+                    VALUES (?,?,?,?,?,?)";
             $query = $conexion->prepare($sql);
-            $query->bind_param('ss', $nombre, $imagen);
+            $query->bind_param('ississ', $categoria, $autor, $nomlibro, $tipo, $imagen, $pdf);
             return $query->execute();
         }
 
         public function listar() {
             $conexion = parent::conectar();
             $passwordExistente = "";
-            $sql = "SELECT * FROM categorias";
+            $sql = "SELECT * FROM libros";
             $query = $conexion->query($sql);
             $respuesta = $query->fetch_all();
 
             if ($respuesta) {
                 $data = array("data"=>$respuesta);
-
-                foreach($data["data"] as $key => $dat){
-                    $data["data"][$key][] = '<ul class="list-inline m-0">
-                    <li class="list-inline-item">
-                        <button type="button" id="editcat" data-id="'.$data["data"][$key][0].'" class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i> Editar</button>
-                    </li>
-                    <li class="list-inline-item">
-                        <button type="button" id="deletecat" data-id="'.$data["data"][$key][0].'" class="btn btn-danger"><i class="fa-regular fa-trash-can"></i> Eliminar</button>
-                    </li>
-                </ul>';
-                }
-
+                
                 return json_encode($data);
             } else {
                 return false;
             }
-        }
+        } 
         
         public function editar($idcat, $nombre, $imagen) {
             //var_dump($nombre, $imagen);
             $conexion = parent::conectar();
-            $sql = "UPDATE categorias SET nombre = ?, imagen = ? WHERE id = ?"; 
+            $sql = "UPDATE libros SET nombre = ?, imagen = ? WHERE id = ?"; 
             $query = $conexion->prepare($sql);
             $query->bind_param('ssi', $nombre, $imagen, $idcat);
             return $query->execute();
@@ -51,7 +40,7 @@
         public function delete($idcat) {
             //var_dump($nombre, $imagen);
             $conexion = parent::conectar();
-            $sql = "DELETE FROM categorias WHERE id = ?"; 
+            $sql = "DELETE FROM libros WHERE id = ?"; 
             $query = $conexion->prepare($sql);
             $query->bind_param('i', $idcat);
             return $query->execute();
