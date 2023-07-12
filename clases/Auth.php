@@ -20,11 +20,12 @@
 
             if (mysqli_num_rows($respuesta) > 0) {
                 $user = mysqli_fetch_array($respuesta);
-                $passwordExistente = $user['password'];
+                $passwordExistente = $user['passwor'];
                 
                 if (password_verify($password, $passwordExistente)) {
                     $_SESSION['usuario'] = $user['nombre'];
                     $_SESSION['rol'] = $user['perfil'];
+                    $_SESSION['id'] = $user['id'];
                     return true;
                 } else {
                     return false;

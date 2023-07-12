@@ -44,7 +44,25 @@ $empezar_desde = ($pagina-1) * $cantidad_resultados_por_pagina;
 ?>
 <?php
 //Obtiene TODO de la tabla
-$obtener_todo_BD = "SELECT * FROM libros";
+
+if(isset($_GET['tipo']) && isset($_GET['search'])){
+  $tipob = $_GET['tipo'];
+  $search = $_GET['search']; 
+
+  if($tipob == 'categoria'){
+    $obtener_todo_BD = "SELECT * FROM libros LEFT JOIN categorias as c ON libros.categoria_id = c.id WHERE c.nombre LIKE '%$search%' ";
+  }else if($tipob == 'autor'){
+    $obtener_todo_BD = "SELECT * FROM libros WHERE autor LIKE '%$search%' ";
+  }else{
+    $obtener_todo_BD = "SELECT * FROM libros WHERE nombre LIKE '%$search%' ";
+  }
+  
+
+}else{
+  $obtener_todo_BD = "SELECT * FROM libros";
+}
+
+
 
 //Realiza la consulta
 $consulta_todo = Conexion::conectar()->query($obtener_todo_BD);
@@ -63,10 +81,42 @@ else{
 
 //Realiza la consulta en el orden de ID ascendente (cambiar "id" por, por ejemplo, "nombre" o "edad", alfabéticamente, etc.)
 //Limitada por la cantidad de cantidad por página
-$consulta_resultados = Conexion::conectar()->query("
-SELECT * FROM `libros` 
-ORDER BY `libros`.`id` ASC 
-LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
+
+if(isset($_GET['tipo']) && isset($_GET['search'])){
+  $tipob = $_GET['tipo'];
+  $search = $_GET['search']; 
+
+  if($tipob == 'categoria'){
+    $consulta_resultados = Conexion::conectar()->query("
+    SELECT libros.id,libros.nombre,libros.imagen FROM `libros` 
+    LEFT JOIN `categorias` as c
+    ON `libros`.categoria_id = `c`.id
+    WHERE `c`.nombre LIKE '%$search%'
+    ORDER BY `libros`.`id` ASC 
+    LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
+    $obtener_todo_BD = "SELECT * FROM libros LEFT JOIN categorias as c ON libros.categoria_id = c.id WHERE c.nombre LIKE '%$search%' ";
+  }else if($tipob == 'autor'){
+    $consulta_resultados = Conexion::conectar()->query("
+    SELECT * FROM `libros` 
+    WHERE autor LIKE '%$search%'
+    ORDER BY `libros`.`id` ASC 
+    LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
+  }else{
+    $consulta_resultados = Conexion::conectar()->query("
+    SELECT * FROM `libros` 
+    WHERE nombre LIKE '%$search%'
+    ORDER BY `libros`.`id` ASC 
+    LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
+  }
+  
+
+}else{
+  $consulta_resultados = Conexion::conectar()->query("
+    SELECT * FROM `libros` 
+    ORDER BY `libros`.`id` ASC 
+    LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
+}
+
 ?>
 
 <div class="container">
@@ -75,8 +125,21 @@ LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
             <h1 class="mt-4">Libros</h1>
         </div>
         <div style="width: 50%;">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarLibro" style="float: right;margin-top:40px;">Agregar Libro</button>
+            <?php if($_SESSION['rol']=='administrador'){?>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarLibro" style="float: right;margin-top:40px;">Agregar Libro</button>
+            <?php }?>
         </div> 
+    </div>
+    <div>
+        <div class="pt-4" style="display: flex;width:80%;padding-left:12px;">
+            <select class="form-select" name="tipob" id="tipob">
+                <option value="categoria">Categoría</option>
+                <option value="autor">Autor</option>
+                <option value="libro">Libro</option>
+            </select>
+            <input type="text" class="form-control" placeholder="Buscar" name="search" id="search">
+            <i class="fa-solid fa-magnifying-glass" id="searc"></i>
+        </div>
     </div>
     <div class="py-5">
         <div class="container">
@@ -93,10 +156,15 @@ LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
                     <h4 class="card-title"><?php echo $row['nombre']; ?></h4>
                     <h6 class="card-subtitle text-muted"><?php echo $row['autor']; ?></h6>
                     <p class="card-text p-y-1">Some quick example text to build on the card title .</p>
-                    <a type="button" href="<?php echo $ruta2.$row['pdf']?>"  target="_blank" class="btn btn-outline-warning"><i class="fa-solid fa-arrow-down"></i> Descargar</a>
-                    <a type="button" data-id="<?php echo $row['id']; ?>" target="_blank" class="btn btn-outline-success editar"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                    <?php if($row['tipo'] == 1){ ?>
+                    <a type="button" data-ruta="<?php echo $ruta2.$row['pdf']?>" data-pdf="<?php echo $row['pdf']?>" class="btn btn-outline-warning descargar"><i class="fa-solid fa-arrow-down"></i> Descargar</a>
+                    <?php } else { ?>
+                    <a type="button" class="btn btn-outline-warning disabled"><i class="fa-solid fa-book"></i> Físico</a>
+                    <?php } if($_SESSION['rol'] == 'administrador') { ?>
+                    <a type="button" data-id="<?php echo $row['id']; ?>" data-cat="<?php echo $row['categoria_id']; ?>" data-autor="<?php echo $row['autor']; ?>" data-nombre="<?php echo $row['nombre']; ?>" data-tipo="<?php echo $row['tipo']; ?>" class="btn btn-outline-success editar"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
                     <a type="button" data-id="<?php echo $row['id']; ?>" target="_blank" class="btn btn-outline-danger eliminar"><i class="fa-regular fa-trash-can"></i> Eliminar</a>
-                </div>
+                    <?php } ?>
+                  </div>
                 
                 </div>
             </div>
@@ -184,9 +252,120 @@ LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
   </div>
 </div>
 
+<div class="modal fade" id="modalEditarLibro" tabindex="-1" aria-labelledby="modalEditarLibro" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Editar Libro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group mb-4">
+            <input name="idlibro" id="idlibro" type="hidden">
+            <label for="exampleInputEmail1">Categoría</label>
+            <select name="editcategoria" class="form-select" aria-label="Default select example" id="editcategoria">
+                <option value="">Seleccione Categoría</option>
+                <?php
+                    $sql=Conexion::conectar()->prepare("SELECT * FROM categorias ORDER BY id DESC");
+                    $sql->execute();
+                    foreach ($sql as $row) {
+                        echo "<option value='".$row['id']."'>";
+                        echo $row['nombre'];
+                        echo "</option>";
+                    }
+                ?>
+            </select> 
+        </div>
+        <div class="form-group mb-4">
+            <label for="exampleInputEmail1">Autor</label>
+            <input type="text" class="form-control" id="editautor" name="editautor" placeholder="Autor">
+        </div>
+        <div class="form-group mb-4">
+            <label for="exampleInputEmail1">Nombre</label>
+            <input type="text" class="form-control" id="editlibro" name="editlibro" placeholder="libro">
+        </div>
+        <div class="form-group mb-4">
+            <label for="exampleInputEmail1">Tipo</label>
+            <select name="edittipo" class="form-select" aria-label="Default select example" id="edittipo">
+                <option value="">Seleccione el tipo de libro</option>
+                <option value="1">Digital</option>
+                <option value="2">Físico</option>
+            </select>
+        </div>
+        <div class="form-group mb-4">
+            <label for="exampleInputPassword1">Imagen</label><br>
+            <input name="editfichero[]" id="editfichero" type="file" size="150" maxlength="150" multiple=""> 
+        </div>
+        <div class="form-group mb-4">
+            <label for="exampleInputPassword1">Pdf</label><br>
+            <input name="editpdf[]" id="editpdf" type="file" size="150" maxlength="150" multiple=""> 
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" id="edit" class="btn btn-primary">Editar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <?php include_once 'includes/footer.php' ?>
 
 <script>
+
+$('#search').keypress(function(event){
+  var keycode = (event.keyCode ? event.keyCode : event.which);
+  if(keycode == '13'){
+    let tipo = $('#tipob').val();
+    let search = $('#search').val();
+    window.location.href = 'libros.php?tipo='+tipo+'&search='+search;
+  }
+});
+
+ $('#searc').click(function(e){
+    e.preventDefault();
+    let tipo = $('#tipob').val();
+    let search = $('#search').val();
+    window.location.href = 'libros.php?tipo='+tipo+'&search='+search;
+ });
+
+$('.descargar').click(function(){
+
+  let ruta = $(this).data('ruta');
+  let pdf = $(this).data('pdf');
+
+  $.ajax({
+     type: 'POST',
+     url: ruta,
+     xhr: function(){
+        xhr = jQuery.ajaxSettings.xhr.apply(this, arguments);
+        return xhr;
+    },
+     xhrFields: {
+         responseType: 'blob'
+     },
+     data: {
+         ajax: true,
+         variable1: "value",
+         variable2: "other value",
+     },
+     success: function (json) {
+         var blobUrl = URL.createObjectURL(xhr.response);
+        var a = document.createElement('a');
+        $(a).attr({
+            href: blobUrl
+            , download: pdf
+        }).text('');
+ 
+        document.body.appendChild(a);
+        a.click();
+     },
+     error: function() {
+        console.log("Error");
+     }
+  });
+
+});
 
 $("#gou").click(function(){
 
@@ -195,9 +374,14 @@ $("#gou").click(function(){
     formData.append('autor',$("#autor").val());
     formData.append('tipo',$("#tipo").val());
     formData.append('nomLibro',$("#libro").val());
-    formData.append('imagen',$('#fichero')[0].files[0]);
-    formData.append('pdf',$('#pdf')[0].files[0]);
 
+    if($('#fichero')[0].files[0]){
+      formData.append('imagen',$('#fichero')[0].files[0]);
+    }
+    if($('#pdf')[0].files[0]){
+      formData.append('pdf',$('#pdf')[0].files[0]);
+    }
+    
     $.ajax({
             url: 'servidor/libros/agregarlibro.php',
             type: 'post',
@@ -225,9 +409,9 @@ $("#gou").click(function(){
                     button: "Cerrar",
                     closeModal: false
                     }).then((value) => {
-                      if(value){
+                      /*if(value){
                         window.location = "libros.php";
-                      }
+                      }*/
                     })
                 }
             }
@@ -286,6 +470,71 @@ $("#gou").click(function(){
       }
     });
 
+  });
+
+  $('.editar').click(function(e){
+    e.preventDefault;
+
+    $('#modalEditarLibro').modal('show');
+
+    $('#idlibro').val($(this).data('id'));
+    $("#editcategoria").val($(this).data('cat'));
+    $("#editautor").val($(this).data('autor'));
+    $("#edittipo").val($(this).data('tipo'));
+    $("#editlibro").val($(this).data('nombre'));
+
+  });
+
+  $("#edit").click(function(){
+
+    var formData = new FormData();
+    formData.append('idLibro',$("#idlibro").val());
+    formData.append('idCategoria',$("#editcategoria").val());
+    formData.append('autor',$("#editautor").val());
+    formData.append('tipo',$("#edittipo").val());
+    formData.append('nomLibro',$("#editlibro").val());
+
+    if($('#editfichero')[0].files[0]){
+      formData.append('imagen',$('#editfichero')[0].files[0]);
+    }
+    if($('#editpdf')[0].files[0]){
+      formData.append('pdf',$('#editpdf')[0].files[0]);
+    }
+
+    $.ajax({
+            url: 'servidor/libros/editarlibro.php',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                response = JSON.parse(response);
+                console.log(response);
+                if(response.Code == 200){
+                  swal({
+                    icon: "success",
+                    title: response.Message,
+                    button: "Cerrar",
+                    closeModal: false
+                    }).then((value) => {
+                      if(value){
+                        window.location = "libros.php";
+                      }
+                    })
+                }else{
+                  swal({
+                    icon: "error",
+                    title: response.Message,
+                    button: "Cerrar",
+                    closeModal: false
+                    }).then((value) => {
+                      if(value){
+                        window.location = "libros.php";
+                      }
+                    })
+                }
+            }
+        });
   });
 
     function getParameterByName(name) {

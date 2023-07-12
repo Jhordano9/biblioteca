@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="public/css/login.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title>Inicio </title>
+    <title>Biblioteca</title>
   </head>
   <body>
     
@@ -51,6 +51,9 @@
             <?php echo $_SESSION['usuario']; ?>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+          <?php if($_SESSION['rol'] == 'administrador'){?>
+          <li><a class="dropdown-item" href="usuarios.php">Usuarios</a></li>
+          <?php }?>
             <li><a class="dropdown-item" href="servidor/login/logout.php">Salir del sistema</a></li>
           </ul>
         </li>

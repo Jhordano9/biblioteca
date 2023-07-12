@@ -71,24 +71,39 @@ LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
 
 <!-- Page Content -->
 <div class="container mb-4">
-  <h1 class="mt-4 mb-4">Catálogo de libros</h1>
-  <div class="row">
+    <div>
+        <h1 class="mt-4">Catálogo</h1>
+        <div class="pt-3" style="display: flex;width:80%;">
+            <select class="form-select" name="tipob" id="tipob">
+                <option value="categoria">Categoría</option>
+                <option value="autor">Autor</option>
+                <option value="libro">Libro</option>
+            </select>
+            <input type="text" class="form-control" placeholder="Buscar" name="search" id="search">
+            <i class="fa-solid fa-magnifying-glass" id="searc"></i>
+        </div>
+        
+    </div>
+    <div class="py-5">
+        <div class="container">
+        <div class="row">
   <?php $ruta = "public/images/categorias/"; 
                         
                 foreach($consulta_resultados as $row){?>
-  <div class="col-sm-3">
-    <div class="card" style="width: 12rem;">
-      <img class="card-img-top" src="<?php echo $ruta.$row['imagen']?>" alt="Card image cap">
-      <div class="card-body">
-        <h5 class="card-title"><?php echo $row['nombre']?></h5>
-        <a href="#" class="btn btn-primary">Ver</a>
-      </div>
-    </div>
-  </div>
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                <img class="card-img-top" src="<?php echo $ruta.$row['imagen']?>" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title"><?php echo $row['nombre']?></h5>
+                    <a data-id="<?php echo $row['nombre']?>" class="btn btn-primary ir">Ver</a>
+                </div>
+                </div>
+            </div>
   <?php }?>
-  </div>
+        </div>
+        </div>
+    </div>
 </div>
-
 <div class="container pagination mb-4" id="pagination">
     
     <?php
@@ -117,6 +132,32 @@ LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
  * @param String name
  * @return String
  */
+
+ $('.ir').click(function(e){
+    e.preventDefault();
+
+    let tipo = 'categoria';
+    let search = $(this).data('id');
+    window.location.href = 'libros.php?tipo='+tipo+'&search='+search;
+
+ });
+
+ $('#search').keypress(function(event){
+  var keycode = (event.keyCode ? event.keyCode : event.which);
+  if(keycode == '13'){
+    let tipo = $('#tipob').val();
+    let search = $('#search').val();
+    window.location.href = 'libros.php?tipo='+tipo+'&search='+search;
+  }
+});
+
+ $('#searc').click(function(e){
+    e.preventDefault();
+    let tipo = $('#tipob').val();
+    let search = $('#search').val();
+    window.location.href = 'libros.php?tipo='+tipo+'&search='+search;
+ });
+
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),

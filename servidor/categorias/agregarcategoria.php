@@ -7,7 +7,7 @@
 
     //foreach($_FILES["imagen"]['tmp_name'] as $key => $tmp_name)
     //{
-        //if(is_uploaded_file($_FILES['imagen']['tmp_name'][$key])) { 
+        if(isset($_FILES['imagen'])) { 
         
         
             // creamos las variables para subir a la db
@@ -35,7 +35,9 @@
                 }
         
             }  
-        //}  
+        }else{
+            echo json_encode(["Message" => "Ingrese la imagen","Code" => 500]);
+        }  
     //}
 
 ?>

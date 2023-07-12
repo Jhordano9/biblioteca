@@ -125,9 +125,7 @@
                     button: "Cerrar",
                     closeModal: false
                     }).then((value) => {
-                      if(value){
-                        window.location = "categorias.php";
-                      }
+
                     })
                 }
             }
@@ -232,9 +230,7 @@
                     button: "Cerrar",
                     closeModal: false
                     }).then((value) => {
-                      if(value){
-                        window.location = "categorias.php";
-                      }
+                     
                     })
                 }
             }

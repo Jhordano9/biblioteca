@@ -8,7 +8,7 @@
 
     //foreach($_FILES["imagen"]['tmp_name'] as $key => $tmp_name)
     //{
-        //if(is_uploaded_file($_FILES['imagen']['tmp_name'][$key])) { 
+        if(isset($_FILES['imagen'])) { 
         
         
             // creamos las variables para subir a la db
@@ -36,7 +36,17 @@
                 }
         
             }  
-        //}  
+        }else{
+
+                $response = $Categoria->editar($idcat,$categoria,'');
+
+                if ($response) {
+                    echo json_encode(["Message" => "Editado Exitosamente","Code" => 200]);
+                }else{
+                    echo json_encode(["Message" => "Error al registrar","Code" => 500]);
+                }
+
+        }  
     //}
 
 ?>

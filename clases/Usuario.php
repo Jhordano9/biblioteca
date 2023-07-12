@@ -1,21 +1,26 @@
 <?php 
     include "Conexion.php";
 
-    class Categoria extends Conexion {
-        public function registrar($nombre, $imagen) {
+    class Usuario extends Conexion {
+        public function registrar($nombre, $email, $password, $perfil, $estado, $fecha) {
             //var_dump($nombre, $imagen);
-            $conexion = parent::conectar();
-            $sql = "INSERT INTO categorias (nombre, imagen) 
-                    VALUES (?,?)";
-            $query = $conexion->prepare($sql);
-            $query->bind_param('ss', $nombre, $imagen);
-            return $query->execute();
+            $vacio = '';
+            try{
+                $conexion = parent::conectar();
+                $sql = "INSERT INTO usuarios (nombre, email, foto, passwor, perfil, estado, fecha) 
+                        VALUES (?,?,?,?,?,?,?)";
+                $query = $conexion->prepare($sql);
+                $query->bind_param('sssssis', $nombre, $email, $vacio, $password, $perfil, $estado, $fecha);
+                return $query->execute();
+            }catch(Exception $ex){
+                return $ex->getMessage();
+            }
         }
 
         public function listar() {
             $conexion = parent::conectar();
             $passwordExistente = "";
-            $sql = "SELECT * FROM categorias";
+            $sql = "SELECT id,nombre,email,perfil,estado FROM usuarios";
             $query = $conexion->query($sql);
             $respuesta = $query->fetch_all();
 
@@ -23,6 +28,13 @@
                 $data = array("data"=>$respuesta);
 
                 foreach($data["data"] as $key => $dat){
+
+                    if($data["data"][$key][4] == 1){
+                        $data["data"][$key][4] = '<button type="button" id="suspender" data-id="'.$data["data"][$key][0].'" class="btn btn-success btn-sm">Activo</button>';
+                    }else{
+                        $data["data"][$key][4] = '<button type="button" id="activar" data-id="'.$data["data"][$key][0].'" class="btn btn-danger btn-sm">Suspendido</button>';
+                    }
+
                     $data["data"][$key][] = '<ul class="list-inline m-0">
                     <li class="list-inline-item">
                         <button type="button" id="editcat" data-id="'.$data["data"][$key][0].'" class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i> Editar</button>
