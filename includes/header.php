@@ -5,7 +5,7 @@
 ?>
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -31,7 +31,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto">
       <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="index.php">Inicio</a>
+          <a class="nav-link" aria-current="page" href="inicio.php">Inicio</a>
         </li>
         <?php if($_SESSION['rol'] == 'administrador'){?>
         <li class="nav-item">
