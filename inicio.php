@@ -92,7 +92,7 @@ LIMIT $empezar_desde, $cantidad_resultados_por_pagina");
                 foreach($consulta_resultados as $row){?>
             <div class="col-md-3 mb-4">
                 <div class="card">
-                <img class="card-img-top" height="300" src="<?php echo $ruta.$row['imagen']?>" alt="Card image cap">
+                <img class="card-img-top" height="200" src="<?php echo $ruta.$row['imagen']?>" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $row['nombre']?></h5>
                     <a data-id="<?php echo $row['nombre']?>" class="btn btn-primary ir">Ver</a>
