@@ -12,11 +12,12 @@
     //foreach($_FILES["imagen"]['tmp_name'] as $key => $tmp_name)
     //{
         //if(is_uploaded_file($_FILES['imagen']['tmp_name'][$key])) { 
+
+    $ruta1 = "../../public/images/libros/"; 
+    $ruta2 = "../../public/pdfs/"; 
         
         if(isset($_FILES['imagen'])) { 
             // creamos las variables para subir a la db
-            $ruta1 = "../../public/images/libros/"; 
-            $ruta2 = "../../public/pdfs/"; 
 
             $nombrefinal1 = trim ($_FILES['imagen']['name']); //Eliminamos los espacios en blanc
             $upload1 = $ruta1 . $nombrefinal1; 
