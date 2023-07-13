@@ -68,6 +68,43 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuario" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Editar Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group mb-4">
+            <label for="exampleInputEmail1">Nombre</label>
+            <input type="hidden" name="iduser" id="iduser">
+            <input type="text" class="form-control" id="editnombre" name="editnombre">
+        </div>
+        <div class="form-group mb-4" >
+            <label for="exampleInputEmail1">Email</label>
+            <input type="email" class="form-control" id="editemail" name="editemail">
+        </div>
+        <div class="form-group mb-4" >
+            <label for="exampleInputEmail1">Contraseña</label>
+            <input type="password" class="form-control" id="editpassword" name="editpassword">
+        </div>
+        <div class="form-group mb-4" >
+            <label for="exampleInputEmail1">Perfil</label>
+            <select name="editrol" class="form-select" id="editrol">
+                <option value="administrador">Administrador</option>
+                <option value="estudiante">Estudiante</option>
+            </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" id="edit" class="btn btn-primary">Editar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <?php include_once 'includes/footer.php'?>
 
 <script>
@@ -161,16 +198,34 @@
         });
   });
 
-  table.on('click', '#prestar', function (e) {
+  table.on('click', '#editcat', function (e) {
     let data = table.row(e.target.closest('tr')).data();
-    let estado = 'En curso';
-    
-    var formData = new FormData();
-    formData.append('idPrestamo',data[0]);
-    formData.append('estado',estado);
 
-    $.ajax({
-              url: 'servidor/prestamos/editarprestamo.php',
+    $('#modalEditarUsuario').modal('show');
+    $('#iduser').val(data[0]);
+    $('#editnombre').val(data[1]);
+    $('#editemail').val(data[2]);
+    $('#editperfil').val(data[3]);
+    
+  });
+
+  table.on('click', '#deletecat', function (e) {
+
+    let data = table.row(e.target.closest('tr')).data();
+
+    var formData = new FormData();
+    formData.append('idUsuario',data[0]);
+
+    swal({
+      title: "Estás seguro de eliminar el usuario?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+          $.ajax({
+              url: 'servidor/usuarios/eliminarusuario.php',
               type: 'post',
               data: formData,
               contentType: false,
@@ -186,7 +241,7 @@
                       closeModal: false
                       }).then((value) => {
                         if(value){
-                          window.location = "prestamos.php";
+                          window.location = "usuarios.php";
                         }
                       })
                   }else{
@@ -197,25 +252,29 @@
                       closeModal: false
                       }).then((value) => {
                         if(value){
-                          window.location = "prestamos.php";
+                          window.location = "categorias.php";
                         }
                       })
                   }
               }
         });
+      } else {
+        
+      }
+    });
 
-  });
+});
 
-  table.on('click', '#entregar', function (e) {
+  table.on('click', '#suspender', function (e) {
     let data = table.row(e.target.closest('tr')).data();
-    let estado = 'Entregado';
+    let estado = 0;
     
     var formData = new FormData();
-    formData.append('idPrestamo',data[0]);
+    formData.append('idUser',data[0]);
     formData.append('estado',estado);
 
     $.ajax({
-              url: 'servidor/prestamos/editarprestamo.php',
+              url: 'servidor/usuarios/editarestado.php',
               type: 'post',
               data: formData,
               contentType: false,
@@ -231,7 +290,7 @@
                       closeModal: false
                       }).then((value) => {
                         if(value){
-                          window.location = "prestamos.php";
+                          window.location = "usuarios.php";
                         }
                       })
                   }else{
@@ -242,7 +301,7 @@
                       closeModal: false
                       }).then((value) => {
                         if(value){
-                          window.location = "prestamos.php";
+                          window.location = "usuarios.php";
                         }
                       })
                   }
@@ -250,16 +309,64 @@
         });
 
   });
+
+  table.on('click', '#activar', function (e) {
+    let data = table.row(e.target.closest('tr')).data();
+    let estado = 1;
+    
+    var formData = new FormData();
+    formData.append('idUser',data[0]);
+    formData.append('estado',estado);
+
+    $.ajax({
+              url: 'servidor/usuarios/editarestado.php',
+              type: 'post',
+              data: formData,
+              contentType: false,
+              processData: false,
+              success: function(response) {
+                  response = JSON.parse(response);
+                  console.log(response);
+                  if(response.Code == 200){
+                    swal({
+                      icon: "success",
+                      title: response.Message,
+                      button: "Cerrar",
+                      closeModal: false
+                      }).then((value) => {
+                        if(value){
+                          window.location = "usuarios.php";
+                        }
+                      })
+                  }else{
+                    swal({
+                      icon: "error",
+                      title: response.Message,
+                      button: "Cerrar",
+                      closeModal: false
+                      }).then((value) => {
+                        if(value){
+                          window.location = "usuarios.php";
+                        }
+                      })
+                  }
+              }
+        });
+
+  });
+
 
   $("#edit").click(function(){
 
     var formData = new FormData();
-    formData.append('idCategoria',$("#idcat").val());
-    formData.append('nomCategoria',$("#editcategoria").val());
-    formData.append('imagen',$('#editarfichero')[0].files[0]);
+    formData.append('iduser',$("#iduser").val());
+    formData.append('editnombre',$("#editnombre").val());
+    formData.append('editemail',$('#editemail').val());
+    formData.append('editpassword',$('#editpassword').val());
+    formData.append('editrol',$('#editrol').val());
 
     $.ajax({
-            url: 'servidor/categorias/editarcategoria.php',
+            url: 'servidor/usuarios/editarusuario.php',
             type: 'post',
             data: formData,
             contentType: false,
@@ -275,7 +382,7 @@
                     closeModal: false
                     }).then((value) => {
                       if(value){
-                        window.location = "categorias.php";
+                        window.location = "usuarios.php";
                       }
                     })
                 }else{

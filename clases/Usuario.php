@@ -51,27 +51,36 @@
             }
         }
         
-        public function editar($idcat, $nombre, $imagen) {
+        public function editar($iduser,$nombre,$email,$password,$rol) {
             //var_dump($nombre, $imagen);
             $conexion = parent::conectar();
 
-            if($imagen !=''){
-                $sql = "UPDATE categorias SET nombre = ?, imagen = ? WHERE id = ?"; 
+            if($password != ''){
+                $sql = "UPDATE usuarios SET nombre = ?, email = ?, passwor = ?, perfil = ? WHERE id = ?"; 
                 $query = $conexion->prepare($sql);
-                $query->bind_param('ssi', $nombre, $imagen, $idcat);
+                $query->bind_param('ssssi', $nombre,$email,$password,$rol,$iduser);
             }else{
-                $sql = "UPDATE categorias SET nombre = ? WHERE id = ?"; 
+                $sql = "UPDATE usuarios SET nombre = ?, email = ?, perfil = ? WHERE id = ?"; 
                 $query = $conexion->prepare($sql);
-                $query->bind_param('si', $nombre, $idcat);
+                $query->bind_param('sssi', $nombre,$email,$rol,$iduser);
             }
-            
+
+            return $query->execute();
+        }
+
+        public function state($iduser, $estado){
+            $conexion = parent::conectar();
+            $sql = "UPDATE usuarios SET estado = ? WHERE id = ?"; 
+            $query = $conexion->prepare($sql);
+            $query->bind_param('ii', $estado,$iduser);
+
             return $query->execute();
         }
 
         public function delete($idcat) {
             //var_dump($nombre, $imagen);
             $conexion = parent::conectar();
-            $sql = "DELETE FROM categorias WHERE id = ?"; 
+            $sql = "DELETE FROM usuarios WHERE id = ?"; 
             $query = $conexion->prepare($sql);
             $query->bind_param('i', $idcat);
             return $query->execute();

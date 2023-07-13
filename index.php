@@ -22,7 +22,6 @@
               <h3 class="login-heading mb-4">Login de usuario</h3>
 
               <!-- Sign In Form -->
-              <form action="servidor/login/logear.php" method="post">
                 <div class="form-floating mb-3">
                   <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Usuario">
                   <label for="usuario">Usuario</label>
@@ -32,10 +31,9 @@
                   <label for="password">Password</label>
                 </div>
                 <div class="d-grid">
-                  <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" type="submit">Entrar</button>
+                  <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" id="enviar" type="submit">Entrar</button>
                 </div>
 
-              </form>
             </div>
           </div>
         </div>
@@ -44,8 +42,58 @@
   </div>
 </div>
 
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+
+    <script>
+
+      $("#enviar").click(function(){
+        login();
+      });
+
+      $('#password').keypress(function(event){
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '13'){
+          login();
+        }
+      });
+
+      function login(){
+        var formData = new FormData();
+        formData.append('usuario',$("#usuario").val());
+        formData.append('password',$('#password').val());
+
+        $.ajax({
+                url: 'servidor/login/logear.php',
+                type: 'post',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    response = JSON.parse(response);
+                    console.log(response);
+                    if(response.Code == 200){
+                      window.location = "inicio.php";
+                    }else{
+                      swal({
+                        icon: "error",
+                        title: response.Message,
+                        button: "Cerrar",
+                        closeModal: false
+                        }).then((value) => {
+
+                        })
+                    }
+                }
+            });
+      }
+
+    </script>
+
   </body>
 </html>
