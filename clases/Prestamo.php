@@ -62,7 +62,71 @@
             } else {
                 return json_encode([]);
             }
-        } 
+        }
+        
+        public function barras($fechai = null, $fechaf = null){
+
+            $conexion = parent::conectar();
+            $sql = "SELECT l.nombre AS libro, COUNT(l.id) AS cantidad FROM prestamos as p 
+            LEFT JOIN categorias as c ON c.id = p.categoria_id
+            LEFT JOIN libros as l ON l.id = p.libro_id
+            GROUP BY l.nombre
+            ORDER BY cantidad DESC LIMIT 5";
+
+            $query = $conexion->query($sql);
+            $respuesta = $query->fetch_all(MYSQLI_ASSOC);
+
+            if(count($respuesta)>0){
+                
+                //$data = array("data"=>$respuesta);
+                $data = [];
+                $etiquetas = [];
+                $colores = ['green','blue'];
+                $i = 0;
+                foreach($respuesta as $res){
+                    $etiquetas[$i] = $res['libro'];
+                    $data[$i] = $res['cantidad'];
+                    $i++;
+                }
+                
+                return json_encode(["data" => $data, "etiquetas" => $etiquetas, "colores" => $colores,"Code" => 200]);
+
+            }else{
+                return false;
+            }
+
+        }
+
+        public function donas($fechai = null, $fechaf = null){
+
+            $conexion = parent::conectar();
+            $sql = "SELECT c.nombre AS categoria, COUNT(c.id) AS cantidad FROM prestamos as p 
+            LEFT JOIN categorias as c ON c.id = p.categoria_id
+            GROUP BY c.nombre";
+
+            $query = $conexion->query($sql);
+            $respuesta = $query->fetch_all(MYSQLI_ASSOC);
+
+            if(count($respuesta)>0){
+                
+                //$data = array("data"=>$respuesta);
+                $data = [];
+                $etiquetas = [];
+                $colores = ['green','blue'];
+                $i = 0;
+                foreach($respuesta as $res){
+                    $etiquetas[$i] = $res['categoria'];
+                    $data[$i] = $res['cantidad'];
+                    $i++;
+                }
+                
+                return json_encode(["data" => $data, "etiquetas" => $etiquetas, "colores" => $colores,"Code" => 200]);
+
+            }else{
+                return false;
+            }
+
+        }
         
         public function editar($id, $estado) {
             //var_dump($nombre, $imagen);

@@ -1,16 +1,35 @@
-<?php include_once 'includes/header.php'?>
-<?php require_once 'conexion.php' ?>
+<?php include_once 'includes/header.php'; ?>
+<?php require_once 'conexion.php'; ?>
 <!-- Page Content -->
-<div class="container">
+<div class="container mb-5">
+
     <div style="display:flex;">
         <div style="width: 50%;">
             <h1 class="mt-4 mb-4">Préstamos</h1>
         </div>
-        <div style="width: 50%;">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoPrestamo" style="float: right;margin-top:40px;">Generar Préstamo</button>
-        </div> 
     </div>
+
+    <div class="graficos mb-4 mt-4" style="display: flex;">
+      <div style="width: 50%;">
+        <h5 style="margin-left: 30%;">Top 5 libros más prestados</h5>
+        <canvas id="grafica" ></canvas>
+      </div>
+
+      <div style="width: 50%;">
+        <h5 style="margin-left: 25%;">Gráfico por categoría más prestada</h5>
+        <canvas id="donas" ></canvas>
+      </div>
+    </div>
+
     <div class="row">
+        <div style="display:flex;">
+            <div style="width: 50%;">
+                <h1 class="mt-4 mb-4">Lista</h1>
+            </div>
+            <div style="width: 50%;">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoPrestamo" style="float: right;margin-top:40px;">Generar Préstamo</button>
+            </div> 
+        </div>
         <div class="col-md-12">
     <!-- CREAR UNA TABLA PARA MOSTRAR LOS DATOS -->
             <table class="table table-responsive table-bordered" id="mytable">
@@ -101,6 +120,111 @@
 
 <script>
 
+  graficos();
+
+  function graficos(id){
+
+    var formData = new FormData();
+    formData.append('fechai','');
+    formData.append('fechaf','');
+    formData.append('tipo','barras');
+
+    $.ajax({
+              url: 'servidor/prestamos/graficos.php',
+              type: 'post',
+              data: formData,
+              contentType: false,
+              processData: false,
+              success: function(response) {
+                  response = JSON.parse(response);
+                  console.log(response);
+                  if(response.Code == 200){
+                    mostrargrafico(response.data,response.colores,response.etiquetas);
+                  }else{
+                    swal({
+                      icon: "error",
+                      title: response.Message,
+                      button: "Cerrar",
+                      closeModal: false
+                      }).then((value) => {
+
+                      })
+                  }
+              }
+    });
+
+    var formData2 = new FormData();
+    formData2.append('fechai','');
+    formData2.append('fechaf','');
+    formData2.append('tipo','donas');
+
+    $.ajax({
+              url: 'servidor/prestamos/graficos.php',
+              type: 'post',
+              data: formData2,
+              contentType: false,
+              processData: false,
+              success: function(response) {
+                  response = JSON.parse(response);
+                  console.log(response);
+                  if(response.Code == 200){
+                    mostrardona(response.data,response.colores,response.etiquetas);
+                  }else{
+                    swal({
+                      icon: "error",
+                      title: response.Message,
+                      button: "Cerrar",
+                      closeModal: false
+                      }).then((value) => {
+
+                      })
+                  }
+              }
+    });
+  }
+
+  function mostrargrafico(data,colors,etiquetas){
+   
+    const $grafica = $("#grafica");
+    new Chart($grafica, {
+      type: "bar",
+      data: {
+        labels: etiquetas,
+        datasets: [{
+          backgroundColor: colors,
+          data: data,
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        legend: {display: false, responsive: true}
+      }
+    });
+
+  }
+
+  function mostrardona(data,colors,etiquetas){
+    const $grafica = $("#donas");
+    new Chart($grafica, {
+      type: "pie",
+      data: {
+        labels: etiquetas,
+        datasets: [{
+          backgroundColor: [
+        'rgba(255, 99, 132, 0.5)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)'
+      ],
+          data: data,
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        legend: {display: false, responsive: true}
+      }
+    });
+  }
 
     $('#estudiante').select2({
         theme: "bootstrap-5",
